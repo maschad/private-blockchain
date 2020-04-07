@@ -132,7 +132,7 @@ class Blockchain {
 
 			if (currentTime - messageTime < 300000) {
 				bitcoinMessage.verify(message, address, signature);
-				const starBlock = new BlockClass(star);
+				const starBlock = new BlockClass({ owner: address, star });
 				resolve(self._addBlock(starBlock));
 			} else {
 				reject(Error("More than 5 minutes elapsed"));
@@ -183,7 +183,11 @@ class Blockchain {
 	getStarsByWalletAddress(address) {
 		let self = this;
 		let stars = [];
-		return new Promise((resolve, reject) => {});
+		return new Promise((resolve, reject) => {
+			self.chain.forEach((block) => {
+				stars.push(block.getBData());
+			});
+		});
 	}
 
 	/**
