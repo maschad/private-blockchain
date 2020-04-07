@@ -64,10 +64,8 @@ class Blockchain {
 	_addBlock(block) {
 		let self = this;
 		return new Promise(async (resolve, reject) => {
-			block.getChainHeight().then(
+			self.getChainHeight().then(
 				(height) => {
-					// Set block height to the current length of the chain
-					block.height = height;
 					// Get the UTC timestamp
 					block.time = new Date().getTime().toString().slice(0, -3);
 					// Not genesis block
@@ -76,6 +74,10 @@ class Blockchain {
 					}
 					// set the current hash
 					block.hash = SHA256(JSON.stringify(block)).toString();
+					// Update chain height
+					self.height++;
+					// Set block height to the current length of the chain
+					block.height = self.height;
 					resolve(self.chain.push(block));
 				},
 				(error) => {
