@@ -75,13 +75,11 @@ class Block {
 		// Resolve with the data if the object isn't the Genesis block
 		let self = this;
 		return new Promise((resolve, reject) => {
-			const data = JSON.parse(hex2ascii(self));
-
+			const data = JSON.parse(hex2ascii(self.body));
 			if (self.height > 0) {
-				resolve(data.body);
-			} else {
-				reject(Error("Genesis Block"));
+				resolve(data);
 			}
+			reject("Genesis block");
 		});
 	}
 }

@@ -63,28 +63,24 @@ class Blockchain {
 	 */
 	_addBlock(block) {
 		let self = this;
-		return new Promise(async (resolve, reject) => {
-			self.getChainHeight().then(
-				(height) => {
-					// Get the UTC timestamp
-					block.time = new Date().getTime().toString().slice(0, -3);
-					// Not genesis block
-					if (height > 0) {
-						block.previousBlockHash = self.chain[self.chain.length - 1].hash;
-					}
-					// set the current hash
-					block.hash = SHA256(JSON.stringify(block)).toString();
-					// Update chain height
-					self.height++;
-					// Set block height to the current length of the chain
-					block.height = self.height;
-					resolve(self.chain.push(block));
-				},
-				(error) => {
-					reject(Error(error));
+		return new Promise(
+			async (resolve, reject) => {
+				// Get the UTC timestamp
+				block.time = new Date().getTime().toString().slice(0, -3);
+				// Not genesis block
+				if (self.height > -1) {
+					block.previousBlockHash = self.chain[self.chain.length - 1].hash;
 				}
-			);
-		});
+				// set the current hash
+				block.hash = SHA256(JSON.stringify(block)).toString();
+				// Update chain height
+				self.height++;
+				// Set block height to the current length of the chain
+				block.height = self.height;
+				resolve(self.chain.push(block));
+			},
+			(error) => reject(Error(error))
+		);
 	}
 
 	/**
@@ -132,8 +128,11 @@ class Blockchain {
 
 			if (currentTime - messageTime < 300000) {
 				bitcoinMessage.verify(message, address, signature);
-				const starBlock = new BlockClass({ owner: address, star });
-				resolve(self._addBlock(starBlock));
+				const starBlock = new BlockClass.Block({
+					data: { owner: address, star },
+				});
+				self._addBlock(starBlock);
+				resolve(starBlock);
 			} else {
 				reject(Error("More than 5 minutes elapsed"));
 			}
@@ -183,11 +182,24 @@ class Blockchain {
 	getStarsByWalletAddress(address) {
 		let self = this;
 		let stars = [];
-		return new Promise((resolve, reject) => {
-			self.chain.forEach((block) => {
-				stars.push(block.getBData());
-			});
-		});
+		return new Promise(
+			(resolve, reject) => {
+				self.chain.forEach((block) => {
+					block
+						.getBData()
+						.then((blockData) => {
+							if (blockData.data !== undefined)
+								if (blockData.data.owner === address)
+									stars.push(blockData.data);
+						})
+						.catch((error) => {
+							console.log("error", error);
+						});
+				});
+				resolve(stars);
+			},
+			(error) => reject(Error(error))
+		);
 	}
 
 	/**
