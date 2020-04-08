@@ -192,8 +192,8 @@ class Blockchain {
 								if (blockData.data.owner === address)
 									stars.push(blockData.data);
 						})
-						.catch((error) => {
-							console.log("error", error);
+						.catch(() => {
+							reject(Error("No data"));
 						});
 				});
 				resolve(stars);
