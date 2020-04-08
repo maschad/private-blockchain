@@ -48,8 +48,10 @@ class Block {
 			// Returning the Block is valid
 			const currentBlockHash = self.hash;
 			// remove block hash to test block integrity
-			self.hash = "";
+			self.hash = null;
 			const reCalculatedHash = SHA256(JSON.stringify(self)).toString();
+			//Re-assign the original hash value
+			self.hash = currentBlockHash;
 
 			if (currentBlockHash === reCalculatedHash) {
 				resolve(true);
