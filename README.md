@@ -7,4 +7,4 @@ A private blockchain built using bitcoin core.
 
 ``` npm i ```
 
-``` npm run start```
+``` node run index.js```
