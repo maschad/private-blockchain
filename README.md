@@ -1,6 +1,6 @@
 # Private Blockchain Application
 
-A private blockchain built using bitcoin core.
+A private blockchain built using node.
 
 
 ## Setup
